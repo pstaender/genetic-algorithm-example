@@ -20,7 +20,6 @@ $(document).ready ->
         $this.data 'before', $this.html()
         $this.trigger('change')
         options[$this.attr('id')] = $this.text()
-        console.log options
       return $this
 
   $results = $('#results')
@@ -61,6 +60,7 @@ $(document).ready ->
       ga = new SolvingCombinationWithGeneticAlgorithm()
       ga.crossoverRate = Number(options.crossoverRate)
       ga.mutationRate = Number(options.mutationRate)
+      ga.equals = Number(options.add_1)
       ga.initPopulation()
 
       log """
