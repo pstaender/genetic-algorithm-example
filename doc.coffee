@@ -57,10 +57,10 @@ $(document).ready ->
         else
           console.log(description)
 
+      SolvingCombinationWithGeneticAlgorithm::crossoverRate = Number(options.crossoverRate)
+      SolvingCombinationWithGeneticAlgorithm::mutationRate = Number(options.mutationRate)
+      Chromosome::equals = Number(options.add_1)
       ga = new SolvingCombinationWithGeneticAlgorithm()
-      ga.crossoverRate = Number(options.crossoverRate)
-      ga.mutationRate = Number(options.mutationRate)
-      ga.equals = Number(options.add_1)
       ga.initPopulation()
 
       log """
