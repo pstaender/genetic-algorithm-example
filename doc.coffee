@@ -59,6 +59,7 @@ $(document).ready ->
 
       SolvingCombinationWithGeneticAlgorithm::crossoverRate = Number(options.crossoverRate)
       SolvingCombinationWithGeneticAlgorithm::mutationRate = Number(options.mutationRate)
+      SolvingCombinationWithGeneticAlgorithm::numberOfChromosomes = 6
       Chromosome::equals = Number(options.add_1)
       ga = new SolvingCombinationWithGeneticAlgorithm()
       ga.initPopulation()
@@ -104,7 +105,7 @@ $(document).ready ->
             log "\n===>\tFound optimal solution with #{chromosome.toString()}:"
             log "\tAbs( #{chromosome.asObjectiveFunction()} )\t = #{chromosome.evaluate()}"
             log "Iterations: #{iterationStep}"
-            solutionFound = true
+            solutionFound = chromosome
             # stop here
 
           
@@ -154,12 +155,19 @@ $(document).ready ->
         log "#{pair[0]?.toString()}\t↔   #{pair[1]?.toString()}" for pair, i in pairs
         log "Singlepoint Crossover"
 
-        children = for pair, i in pairs
+        children = []
+
+        for pair, i in pairs
           k = new Chromosome().randomCrossoverPoint() # just generate a random k
-          child = pair[0].createDescendantBySingleCrossoverPoint(pair[1], k)
-          child.pos = pair[0].pos
-          log "[#{i}]\tk=#{child.crossoverPoint}\t→   #{child.toString('┇',child.crossoverPoint)}"
-          child
+          child1 = pair[0].createDescendantBySingleCrossoverPoint(pair[1], k)
+          child1.pos = pair[0].pos
+          log "[#{i}]\tk=#{child1.crossoverPoint}\t→   #{child1.toString('┇',child1.crossoverPoint)}"
+          children.push(child1)
+
+          child2 = pair[1].createDescendantBySingleCrossoverPoint(pair[0], k)
+          child2.pos = pair[1].pos
+          log "[#{i}]\tk=#{child2.crossoverPoint}\t→   #{child2.toString('┇',child2.crossoverPoint)}"
+          children.push(child2)
 
         ga.assignChildrenToPopulation(children)
 
@@ -178,7 +186,7 @@ $(document).ready ->
             log "[#{i}]:\t#{chromosome.toString()}" 
 
       if solutionFound
-        $button.text("Solution Found: #{chromosome.toString()}")
+        $button.text("Solution Found: #{solutionFound.toString()}")
         $button.addClass('blinking')
       else
         $button.text('no solution found')

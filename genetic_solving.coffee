@@ -80,6 +80,22 @@ class Chromosome
     # between 0 and 2 for [a,b,c] 
     Math.round((Math.random()*(length)))
 
+  createDescendantsBySingleCrossoverPoint: (secondChromosome, k = null) ->
+    if k is null
+      k = @randomCrossoverPoint()
+    # 1st child
+    code = @code.slice(0, k).concat(secondChromosome.code.slice(k))
+    c1 = new Chromosome()
+    c1.code = code
+    c1.crossoverPoint = k
+    # 2nd child
+    code = secondChromosome.code.slice(0, k).concat(@code.slice(k))
+    c2 = new Chromosome()
+    c2.code = code
+    c2.crossoverPoint = k
+    return [ c1, c2 ]
+
+  # deprecated, not the usual way
   createDescendantBySingleCrossoverPoint: (secondChromosome, k = null) ->
     if k is null
       k = @randomCrossoverPoint()
@@ -88,7 +104,6 @@ class Chromosome
     c.code = code
     c.crossoverPoint = k
     return c
-    #@createDescendantByCrossoverPoints(k, secondChromosome)
 
 class SolvingCombinationWithGeneticAlgorithm
 
@@ -118,6 +133,11 @@ class SolvingCombinationWithGeneticAlgorithm
       c.pos = i
       c
     return @
+
+  populationAsString: ->
+    s = for c in @population
+      c.toString()
+    s.join(' | ')
 
   evaluate: ->
     for chromosome in @population
@@ -193,11 +213,11 @@ class SolvingCombinationWithGeneticAlgorithm
 
     return @pairs = pairs
 
-  singlepointCrossover: (pairs = @pairs) ->
-    children = []
-    children = for pair in pairs
-      pair[0].createDescendantBySingleCrossoverPoint(null, pair[1])
-    return children
+  # singlepointCrossover: (pairs = @pairs) ->
+  #   children = []
+  #   children = for pair in pairs
+  #     pair[0].createDescendantBySingleCrossoverPoint(null, pair[1])
+  #   return children
       
   assignChildrenToPopulation: (children) ->
     for child in children
