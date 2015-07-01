@@ -48,6 +48,7 @@ class Chromosome
     return Math.abs(sum - @equals)
 
   fitness: ->
+    # fitness values is here: 0 -> optimal, > 0 -> not optimal 
     # the fittest chromosomes have higher probability to be selected for the next generation
     return 1 / ( 1 + @evaluate() ) 
 

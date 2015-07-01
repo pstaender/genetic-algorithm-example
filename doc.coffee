@@ -59,8 +59,11 @@ $(document).ready ->
 
       SolvingCombinationWithGeneticAlgorithm::crossoverRate = Number(options.crossoverRate)
       SolvingCombinationWithGeneticAlgorithm::mutationRate = Number(options.mutationRate)
+      Chromosome::minValue = Number(options.min)
+      Chromosome::maxValue = Number(options.max)
       SolvingCombinationWithGeneticAlgorithm::numberOfChromosomes = 6
       Chromosome::equals = Number(options.add_1)
+
       ga = new SolvingCombinationWithGeneticAlgorithm()
       ga.initPopulation()
 
@@ -74,6 +77,8 @@ $(document).ready ->
       """
 
       solutionFound = false
+
+      bestChromosome = null
 
       for iterationStep in [1..maxIterations]
 
@@ -91,8 +96,7 @@ $(document).ready ->
           \nEvaluate\n
         """
         for chromosome, i in ga.population
-          # Chromosome
-          
+          # check fitness value for each chromosome
           
           log "[#{i}]:\tAbs( #{chromosome.asObjectiveFunction()} )\t = #{chromosome.evaluate()}" 
 
@@ -100,10 +104,15 @@ $(document).ready ->
           $populationHTML.append($chromosome)
           $results.append($populationHTML)
           
-          if chromosome.evaluate() is 0
+          if not bestChromosome
+            bestChromosome = chromosome
+          else if chromosome.fitness() > bestChromosome.fitness()
+            bestChromosome = chromosome
+
+          if chromosome.fitness() is 1
             $chromosome.addClass('best')
             log "\n===>\tFound optimal solution with #{chromosome.toString()}:"
-            log "\tAbs( #{chromosome.asObjectiveFunction()} )\t = #{chromosome.evaluate()}"
+            log "\tAbs( #{chromosome.asObjectiveFunction()} )\t = #{chromosome.evaluate()}, fitnessValue = #{chromosome.fitness()}"
             log "Iterations: #{iterationStep}"
             solutionFound = chromosome
             # stop here
@@ -116,9 +125,9 @@ $(document).ready ->
           \nSelection
           Fitness for chromosomes\n
         """
-        fitnesses = ga.fitness()
-        log "[#{i}]:\t#{ga.round(fitness)}" for fitness, i in fitnesses
 
+        fitnesses = ga.fitness()
+        log "[#{i}]:\t#{ga.round(fitness)} (fitness)" for fitness, i in fitnesses
 
         totalFitness = ga.totalFitness()
         log """
@@ -189,7 +198,7 @@ $(document).ready ->
         $button.text("Solution Found: #{solutionFound.toString()}")
         $button.addClass('blinking')
       else
-        $button.text('no solution found')
+        $button.text("Best solution found: #{bestChromosome.toString()}")
       
 
       buttonText = $button.text() # restore button text
