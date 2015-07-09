@@ -59,27 +59,31 @@ $(document).ready ->
 
       SolvingCombinationWithGeneticAlgorithm::crossoverRate = Number(options.crossoverRate)
       SolvingCombinationWithGeneticAlgorithm::mutationRate = Number(options.mutationRate)
-      if options.valueset
-        if /(,\s*)*(…|\.\.\.)(,\s*)*/.test(options.valueset)
-          parts = options.valueset.trim().match(/^([0-9]+).*\s*(,\s*)*(…|\.\.\.)(,\s*)*.*?([0-9]+)$/)
-          Chromosome::minValue = Number(parts[1])
-          Chromosome::maxValue = Number(parts[5])
-        else
-          if /(\{|\})+/.test(options.valueset)
-            Chromosome::valueSet = []
-            for set in options.valueset.split(/\{(.*?)\}/g)
-              numbers = []
-              for n in set.split(',')
-                numbers.push(Number(n)) if Number(n)
-              Chromosome::valueSet.push(numbers) if numbers?.length > 0
+      Chromosome::valueSet = []
+      for valuesetKey in [ 'a', 'b', 'c', 'd' ]
+        if options['valueset_'+valuesetKey]
+          valueset = options['valueset_'+valuesetKey]
+
+          if /(,\s*)*(…|\.\.\.)(,\s*)*/.test(valueset)
+            parts = valueset.trim().match(/^([0-9]+).*\s*(,\s*)*(…|\.\.\.)(,\s*)*.*?([0-9]+)$/)
+            numbers = for i in [ Number(parts[1]) .. Number(parts[5])]
+              i
+            # console.error parts
+            # Chromosome::minValue = Number(parts[1])
+            # Chromosome::maxValue = Number(parts[5])
           else
-            Chromosome::valueSet = for number in options.valueset.split(',')
+            numbers = for number in valueset.split(',')
               Number(number)
-              
-      # Chromosome::minValue = Number(options.min)
-      # Chromosome::maxValue = Number(options.max)
+          Chromosome::valueSet.push(numbers)
+
       SolvingCombinationWithGeneticAlgorithm::numberOfChromosomes = 6
       Chromosome::equals = Number(options.add_1)
+      Chromosome::factors =
+        a: Number(options.factor_1)
+        b: Number(options.factor_2)
+        c: Number(options.factor_3)
+        d: Number(options.factor_4)
+      console.error Chromosome::factors
 
       ga = new SolvingCombinationWithGeneticAlgorithm()
       ga.initPopulation()
@@ -147,8 +151,8 @@ $(document).ready ->
           Fitness for chromosomes\n
         """
 
-        fitnesses = ga.fitness()
-        log "[#{i}]:\t#{ga.round(fitness)} (fitness)" for fitness, i in fitnesses
+        # fitnesses = ga.fitness()
+        log "[#{i}]:\t#{ga.round(chromosome.fitness())} (fitness)\tevaluated value: #{chromosome.evaluate()}" for chromosome, i in ga.population
 
         totalFitness = ga.totalFitness()
         log """
@@ -215,7 +219,7 @@ $(document).ready ->
           else
             log "[#{i}]:\t#{chromosome.toString()}" 
 
-      if solutionFound
+      if bestChromosome.hasOptimalSolution()
         $button.text("Optimal solution Found: #{solutionFound.toString()}")
         $button.addClass('blinking')
       else

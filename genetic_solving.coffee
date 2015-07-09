@@ -1,5 +1,3 @@
-# a +2 b +3 c +4 d = 30
-
 copyArray = (array) ->
   copiedArray = []
   for element in array
@@ -45,17 +43,17 @@ class Chromosome
     return c
 
   hasOptimalSolution: ->
-    return @fitness() is 1
+    # return false
+    return Math.floor(@fitness()) is 1
 
   randomValueFor: (index = 0) ->
     #keepElementsInSet = true
     valueSet = @valueSet # Object.getPrototypeOf(@).valueSet
     if valueSet?.constructor is Array
       valueSet = valueSet[index] if valueSet[index]?.constructor is Array
-      # valueSet = valueSet[0] if valueSet[0]?.constructor is Array
       i = Math.floor(Math.random() * (valueSet.length))
       # remove element i from array
-      number = valueSet.splice(i,1)
+      number = valueSet[i]
       return number
     else
       return Math.round((Math.random()*@maxValue)+@minValue)
@@ -63,10 +61,12 @@ class Chromosome
   evaluate: ->
     #F_obj[1] = Abs(( 12 + 2*05 + 3*23 + 4*08 ) - 30)
     sum = 0
+    allValuesCount = 0
     @code.forEach (value, i) =>
       factor = @factors[Object.keys(@factors)[i]]
       sum += value * factor
-    return Math.abs(sum - @equals)
+      allValuesCount += value
+    return Math.abs(sum - @equals)# + (Math.log(allValuesCount)/Math.exp(1))
 
   fitness: ->
     # fitness values is here: 0 -> optimal, > 0 -> not optimal 
@@ -81,7 +81,9 @@ class Chromosome
       code.splice(index, 0, marker)
       "( #{code.join(' ')} )"
     else
-      "( #{code.join(' ')} )"
+      parts = for c in code
+        String(c)
+      "( #{parts.join(' ')} )"
 
   asObjectiveFunction: (usingNumericValues = true) ->
     sum = []

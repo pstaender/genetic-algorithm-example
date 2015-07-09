@@ -12,17 +12,21 @@
   <button id="go" data-text="start">… loading js …</button>
   <div id="myFunction">
     
-      a • <span id="factor_1" contentEditable="true">1</span>
-  +   b • <span id="factor_2" contentEditable="true">2</span>
-  +   c • <span id="factor_3" contentEditable="true">3</span>
-  +   d • <span id="factor_4" contentEditable="true">4</span>
-  -   <span id="add_1" contentEditable="true">30</span>
-  = 0
+      a • <span id="factor_1" contentEditable="true">2</span>
+  +   b • <span id="factor_2" contentEditable="true">4</span>
+  +   c • <span id="factor_3" contentEditable="true">6</span>
+  +   d • <span id="factor_4" contentEditable="true">8</span>
+  = <span id="add_1" contentEditable="true">40</span>
     <p class="smaller">
     <br />
     <!-- 0 , … , 10 -->
-    a,b,c,d ∈ {&nbsp;<span id="valueset" contentEditable="true">{1,2,3},{2,4,6},{2,4,6},{1,2,3}</span>&nbsp;}
-    <br />
+    a ∈ { &nbsp; <span id="valueset_a" contentEditable="true">1, … , 8</span> &nbsp; }<br />
+    b ∈ { &nbsp; <span id="valueset_b" contentEditable="true">1, … , 4</span> &nbsp; }<br />
+    c ∈ { &nbsp; <span id="valueset_c" contentEditable="true">1, 2</span> &nbsp; }<br />
+    d ∈ { &nbsp; <span id="valueset_d" contentEditable="true">1</span> &nbsp; }<br />
+
+<!--     b,c,d ∈ {&nbsp;<span id="valueset" contentEditable="true">{1,2,3,4,5,6,7,8},{1,2,3},{1,2,3},{1}</span>&nbsp;} -->
+
     </p>
     <p class="smaller">
     <br />
@@ -30,7 +34,7 @@
     <br />
     mutationRate = <span id="mutationRate" contentEditable="true">0.1</span>
     <br />
-    maxIterations = <span id="maxIterations" contentEditable="true">100</span>
+    maxIterations = <span id="maxIterations" contentEditable="true">50</span>
     </p>
   </div>
 
