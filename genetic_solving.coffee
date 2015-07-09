@@ -1,8 +1,15 @@
 # a +2 b +3 c +4 d = 30
 
-class Chromosome
+copyArray = (array) ->
+  copiedArray = []
+  for element in array
+    if element?.constructor is Array
+      copiedArray.push(copyArray(element))
+    else
+      copiedArray.push(element)
+  copiedArray
 
-  # ( a b c d ) -> chromosome
+class Chromosome
 
   factors: {
     a: 1
@@ -14,17 +21,20 @@ class Chromosome
   equals: 30
   minValue: 0
   maxValue: 30
+  valueSet: null
   # only to save index where (and if) the chromosome was operated
   crossoverPoint: null
   mutationPoint: null
 
   # array with gens
-  code: null 
+  code: null
 
   constructor: ->
     @code = Array(Object.keys(@factors).length)
+    # copy array
+    @valueSet = copyArray(Object.getPrototypeOf(@).valueSet)
     for i in [1..@code.length]
-      @code[i-1] = @randomNumberForVariable()
+      @code[i-1] = @randomValueFor(i-1)
 
   clone: ->
     c = new Chromosome()
@@ -34,10 +44,21 @@ class Chromosome
     c.code = @code.slice()
     return c
 
+  hasOptimalSolution: ->
+    return @fitness() is 1
 
-  randomNumberForVariable: ->
-    # we restrict here the number between 0 and 30
-    return Math.round((Math.random()*@maxValue)+@minValue)
+  randomValueFor: (index = 0) ->
+    #keepElementsInSet = true
+    valueSet = @valueSet # Object.getPrototypeOf(@).valueSet
+    if valueSet?.constructor is Array
+      valueSet = valueSet[index] if valueSet[index]?.constructor is Array
+      # valueSet = valueSet[0] if valueSet[0]?.constructor is Array
+      i = Math.floor(Math.random() * (valueSet.length))
+      # remove element i from array
+      number = valueSet.splice(i,1)
+      return number
+    else
+      return Math.round((Math.random()*@maxValue)+@minValue)
 
   evaluate: ->
     #F_obj[1] = Abs(( 12 + 2*05 + 3*23 + 4*08 ) - 30)
@@ -213,12 +234,6 @@ class SolvingCombinationWithGeneticAlgorithm
       
 
     return @pairs = pairs
-
-  # singlepointCrossover: (pairs = @pairs) ->
-  #   children = []
-  #   children = for pair in pairs
-  #     pair[0].createDescendantBySingleCrossoverPoint(null, pair[1])
-  #   return children
       
   assignChildrenToPopulation: (children) ->
     for child in children
@@ -235,7 +250,7 @@ class SolvingCombinationWithGeneticAlgorithm
           # which gene should be mutate?
           pos = Math.floor(Math.random()*chromosome.code.length)
           chromosome.mutationPoint = j
-          chromosome.code[j] = chromosome.randomNumberForVariable()
+          chromosome.code[j] = chromosome.randomValueFor(j, false)
     @population
 
 
@@ -245,7 +260,6 @@ class SolvingCombinationWithGeneticAlgorithm
   randomNumbers: ->
     for chromosome in @population
       Math.random()
-
 
 window.SolvingCombinationWithGeneticAlgorithm = SolvingCombinationWithGeneticAlgorithm
 window.Chromosome = Chromosome

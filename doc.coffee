@@ -59,8 +59,25 @@ $(document).ready ->
 
       SolvingCombinationWithGeneticAlgorithm::crossoverRate = Number(options.crossoverRate)
       SolvingCombinationWithGeneticAlgorithm::mutationRate = Number(options.mutationRate)
-      Chromosome::minValue = Number(options.min)
-      Chromosome::maxValue = Number(options.max)
+      if options.valueset
+        if /(,\s*)*(…|\.\.\.)(,\s*)*/.test(options.valueset)
+          parts = options.valueset.trim().match(/^([0-9]+).*\s*(,\s*)*(…|\.\.\.)(,\s*)*.*?([0-9]+)$/)
+          Chromosome::minValue = Number(parts[1])
+          Chromosome::maxValue = Number(parts[5])
+        else
+          if /(\{|\})+/.test(options.valueset)
+            Chromosome::valueSet = []
+            for set in options.valueset.split(/\{(.*?)\}/g)
+              numbers = []
+              for n in set.split(',')
+                numbers.push(Number(n)) if Number(n)
+              Chromosome::valueSet.push(numbers) if numbers?.length > 0
+          else
+            Chromosome::valueSet = for number in options.valueset.split(',')
+              Number(number)
+              
+      # Chromosome::minValue = Number(options.min)
+      # Chromosome::maxValue = Number(options.max)
       SolvingCombinationWithGeneticAlgorithm::numberOfChromosomes = 6
       Chromosome::equals = Number(options.add_1)
 
@@ -109,9 +126,13 @@ $(document).ready ->
           else if chromosome.fitness() > bestChromosome.fitness()
             bestChromosome = chromosome
 
-          if chromosome.fitness() is 1
+
+          isOptimalSolution = chromosome.hasOptimalSolution()
+
+          if chromosome.hasOptimalSolution()
+
             $chromosome.addClass('best')
-            log "\n===>\tFound optimal solution with #{chromosome.toString()}:"
+            log "\n===>\tFound #{(isOptimalSolution) ? 'optimal' : ''} solution with #{chromosome.toString()}:"
             log "\tAbs( #{chromosome.asObjectiveFunction()} )\t = #{chromosome.evaluate()}, fitnessValue = #{chromosome.fitness()}"
             log "Iterations: #{iterationStep}"
             solutionFound = chromosome
@@ -195,7 +216,7 @@ $(document).ready ->
             log "[#{i}]:\t#{chromosome.toString()}" 
 
       if solutionFound
-        $button.text("Solution Found: #{solutionFound.toString()}")
+        $button.text("Optimal solution Found: #{solutionFound.toString()}")
         $button.addClass('blinking')
       else
         $button.text("Best solution found: #{bestChromosome.toString()}")
