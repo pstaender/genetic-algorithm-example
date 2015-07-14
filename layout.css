@@ -38,7 +38,7 @@ span[contenteditable=true]:hover {
   text-align: center;
   /*background: #fff;*/
   padding: 1em 2em;
-  max-width: 17em;
+  /*max-width: 17em;*/
   margin: 0 auto;
 }
 #myFunction > span {
@@ -92,6 +92,14 @@ span[contenteditable=true]:hover {
   -webkit-animation: blinkbox 1s infinite; /* Safari and Chrome */
 }
 
+pre#data {
+  font-size: 0.6em;
+  text-align: left;
+  background: #fff;
+  font-style: normal;
+  width: 90%;
+}
+
 @-webkit-keyframes blinkbox {
   0% { background: #000; }
   50% { background: #666; }
@@ -103,14 +111,18 @@ span[contenteditable=true]:hover {
   50% { background: #666; }
   100% { background: #000; }
 }
-
 .population > .chromosome > .fitness {
   display: block;
   text-align: center;
   margin-top: 0.5em;
   color: #ffe400;
+}
+.population > .chromosome > .requestedChairs {
+  color: #aaa;
+}
+.population > .chromosome > .fitness, .population > .chromosome > .totalRevenue, .population > .chromosome > .requestedChairs {
   display: none;
 }
-.population > .chromosome.expanded > .fitness {
+.population > .chromosome.expanded > .fitness, .population > .chromosome.expanded > .totalRevenue, .population > .chromosome.expanded > .requestedChairs {
   display: block;
 }

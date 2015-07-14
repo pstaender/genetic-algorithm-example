@@ -7,6 +7,13 @@ copyArray = (array) ->
       copiedArray.push(element)
   copiedArray
 
+cloneObj = (obj) ->
+  return obj if obj is null or typeof obj isnt "object" 
+  copy = obj.constructor()
+  for attr of obj
+    copy[attr] = obj[attr] if obj.hasOwnProperty(attr)
+  copy
+
 class Chromosome
 
   factors: {
@@ -16,11 +23,12 @@ class Chromosome
     d: 4   
   }
 
-  equals: 30
+  chairCapacity: 30
+
   minValue: 0
   maxValue: 30
-  valueSet: null
-  # only to save index where (and if) the chromosome was operated
+  valueSet: {}
+  # only to save index where (and if) on the chromosome was operated on
   crossoverPoint: null
   mutationPoint: null
 
@@ -30,9 +38,11 @@ class Chromosome
   constructor: ->
     @code = Array(Object.keys(@factors).length)
     # copy array
-    @valueSet = copyArray(Object.getPrototypeOf(@).valueSet)
+    @valueSet = cloneObj(Object.getPrototypeOf(@).valueSet)
     for i in [1..@code.length]
-      @code[i-1] = @randomValueFor(i-1)
+      code = @randomValueFor(i-1)
+      @code[i-1] = code
+      
 
   clone: ->
     c = new Chromosome()
@@ -43,22 +53,23 @@ class Chromosome
     return c
 
   hasOptimalSolution: ->
-    # return false
-    return Math.floor(@fitness()) is 1
+    return false
+    # return Math.floor(@fitness()) is 1
 
   randomValueFor: (index = 0) ->
-    #keepElementsInSet = true
-    valueSet = @valueSet # Object.getPrototypeOf(@).valueSet
-    if valueSet?.constructor is Array
-      valueSet = valueSet[index] if valueSet[index]?.constructor is Array
-      i = Math.floor(Math.random() * (valueSet.length))
-      # remove element i from array
-      number = valueSet[i]
-      return number
+    valueSet = @valueSet
+    map = { 0: 'a', 1: 'b', 2: 'c', 3: 'd' }
+    if valueSet
+      valueSet = valueSet[map[index]]
+      i = Math.floor(Math.random() * (Object.keys(valueSet).length))
+      return Object.keys(valueSet)[i]
     else
-      return Math.round((Math.random()*@maxValue)+@minValue)
+      throw Error('No valueSet found')
 
-  evaluate: ->
+  totalRevenue: ->
+    @valueSet.a[@code[0]] + @valueSet.b[@code[1]] + @valueSet.c[@code[2]] + @valueSet.d[@code[3]]
+
+  evaluateRequestedChairs: ->
     #F_obj[1] = Abs(( 12 + 2*05 + 3*23 + 4*08 ) - 30)
     sum = 0
     allValuesCount = 0
@@ -66,12 +77,12 @@ class Chromosome
       factor = @factors[Object.keys(@factors)[i]]
       sum += value * factor
       allValuesCount += value
-    return Math.abs(sum - @equals)# + (Math.log(allValuesCount)/Math.exp(1))
+    return Math.abs(sum - @chairCapacity)# + (Math.log(allValuesCount)/Math.exp(1))
 
   fitness: ->
-    # fitness values is here: 0 -> optimal, > 0 -> not optimal 
+    # fitness values is here: 1 -> optimal, > 0 -> not optimal 
     # the fittest chromosomes have higher probability to be selected for the next generation
-    return 1 / ( 1 + @evaluate() ) 
+    return ( 1 ) / ( 1 + @evaluateRequestedChairs() ) - ( ( 1 / @totalRevenue() ) )
 
   toString: (marker = '', index = 0, offset = 0)  ->
     # returns a nicer to read function string
@@ -85,6 +96,11 @@ class Chromosome
         String(c)
       "( #{parts.join(' ')} )"
 
+  toStringVerbose: (marker = '', index = 0, offset = 0) ->
+    s = @toString(marker, index, offset)
+    s.substring(0, s.length-1) + "{ rev: #{@totalRevenue()} capDev: #{@evaluateRequestedChairs()} } )"
+
+
   asObjectiveFunction: (usingNumericValues = true) ->
     sum = []
     i = 0
@@ -92,7 +108,7 @@ class Chromosome
       value = if usingNumericValues then @code[i] else name
       sum.push("(#{@factors[name]} * #{value})")
       i++
-    return "#{sum.join(' + ')} - #{@equals}"
+    return "#{sum.join(' + ')} - #{@chairCapacity}"
 
   probability: (totalFitness) ->
     # P = Fitness / Total
@@ -162,10 +178,6 @@ class SolvingCombinationWithGeneticAlgorithm
     s = for c in @population
       c.toString()
     s.join(' | ')
-
-  evaluate: ->
-    for chromosome in @population
-      chromosome.evaluate()
 
   fitness: ->
     for chromosome in @population
@@ -252,7 +264,7 @@ class SolvingCombinationWithGeneticAlgorithm
           # which gene should be mutate?
           pos = Math.floor(Math.random()*chromosome.code.length)
           chromosome.mutationPoint = j
-          chromosome.code[j] = chromosome.randomValueFor(j, false)
+          chromosome.code[j] = chromosome.randomValueFor(j)
     @population
 
 

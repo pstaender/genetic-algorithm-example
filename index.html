@@ -19,13 +19,31 @@
   = <span id="add_1" contentEditable="true">40</span>
     <p class="smaller">
     <br />
-    <!-- 0 , … , 10 -->
-    a ∈ { &nbsp; <span id="valueset_a" contentEditable="true">1, … , 8</span> &nbsp; }<br />
+<!-- <table id="data">
+<thead>
+  <th>n</th><th>a</th><th>b</th><th>c</th><th>d</th>
+</thead>
+<tbody>
+  <tr>
+    <td>1</td><td>30</td><td>680</td><td>140</td><td>220</td>
+  </tr>
+</table> -->
+<pre id="data" contentEditable="true">
+# {a,b,c,d} : reservations for 2-persons-table(a), 3-persons-table(b) … 6-persons-table(d)
+# a[n] = x, where x is the summed revenue for all n accepted reservations
+
+{
+  a: { 1: 30, 2: 60, 3: 90, 4: 120, 5: 130, 6: 160, 7: 200, 8: 280 }
+  b: { 1: 80, 2: 150, 3: 350, 4: 500 }
+  c: { 1: 140, 2: 300, 3: 380, 4: 490 }
+  d: { 1: 220, 2: 300, 3: 400, 4: 510, 5: 580 }
+}
+</pre>
+<!--     a ∈ { &nbsp; <span id="valueset_a" contentEditable="true">1, … , 8</span> &nbsp; }<br />
     b ∈ { &nbsp; <span id="valueset_b" contentEditable="true">1, … , 4</span> &nbsp; }<br />
     c ∈ { &nbsp; <span id="valueset_c" contentEditable="true">1, 2, 3</span> &nbsp; }<br />
     d ∈ { &nbsp; <span id="valueset_d" contentEditable="true">1, 2</span> &nbsp; }<br />
-
-<!--     b,c,d ∈ {&nbsp;<span id="valueset" contentEditable="true">{1,2,3,4,5,6,7,8},{1,2,3},{1,2,3},{1}</span>&nbsp;} -->
+ -->
 
     </p>
     <p class="smaller">
@@ -34,7 +52,7 @@
     <br />
     mutationRate = <span id="mutationRate" contentEditable="true">0.1</span>
     <br />
-    maxIterations = <span id="maxIterations" contentEditable="true">50</span>
+    maxIterations = <span id="maxIterations" contentEditable="true">500</span>
     </p>
   </div>
 
